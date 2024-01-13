@@ -79,7 +79,7 @@ export class FileSystem {
   }
 
   async read(fileName: string): Promise<Uint8Array> {
-    const entry: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == fileName);
+    const entry: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == fileName && i.type == "file");
     if (!entry) throw new Error("Entry not found");
 
     if (entry.type == "folder") throw new Error("Not a file!");
@@ -109,8 +109,38 @@ export class FileSystem {
   }
 
   async write(fileName: string, contents: Uint8Array): Promise<void> {
-    const entry: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == fileName);
-    await this.syncToDisk();
+    const entry: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == fileName && i.type == "file");
+    
+    if (!entry) {
+      const entryAsFolder: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == fileName && i.type == "folder");
+      if (entryAsFolder) throw new Error("File as folder already exists!");
+
+      const folderName: string = fileName.substring(0, fileName.lastIndexOf("/"));
+      const parentFolder: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == folderName && i.type == "folder");
+
+      if (!parentFolder) throw new Error("Parent folder missing!");
+
+      this.localWorkingCopy.nodes.push({
+        type: "file",
+        path: fileName
+      });
+      
+      await this.syncToDisk();
+    }
+
+    localForage.setItem(this.fileSystemName + "_" + fileName, contents);
+
+    const attemptedCacheHit: FileSystemDataBlock | undefined = this.localFileSystemEntries.find((i) => i.path == fileName);
+    if (attemptedCacheHit) {
+      const cacheIndex: number = this.localFileSystemEntries.indexOf(attemptedCacheHit);
+      
+      this.localFileSystemEntries.splice(cacheIndex, 1);
+      this.localFileSystemEntries.push({
+        type: "file",
+        path: fileName,
+        data: contents
+      });
+    }
   }
 
   async mkdir(dirName: string): Promise<void> {
@@ -118,7 +148,7 @@ export class FileSystem {
   }
 
   async rm(fileName: string): Promise<void> {
-    // FIXME: We only use entry for checking. Maybe change into a better way?
+    // TODO: We only use entry for checking. Maybe change into a better way?
     const entry: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == fileName);
     if (!entry) throw new Error("Entry not found");
 
