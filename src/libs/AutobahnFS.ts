@@ -34,23 +34,24 @@ export class AutobahnFS {
   }
 
   async sync(directory: string = "/"): Promise<void> {
+    const fixPath = (path: string): string => path.replace("/projects", "/");
+
     for (const entry of await this.trueFS.ls(directory, true)) {
       if (directory == entry.path) continue;
 
       if (entry.type == "folder") {
         try {
-          await this.webcontainerFS.mkdir(entry.path);
+          await this.webcontainerFS.mkdir(fixPath(entry.path));
         } catch (e) {
-          console.error("huh");
           console.error(e);
         }
 
-        await this.sync(entry.path);
+        await this.sync(fixPath(entry.path));
       } else if (entry.type == "file") {
-        const fileContents: Uint8Array = await this.trueFS.read(entry.path);
+        const fileContents: Uint8Array = await this.trueFS.read(fixPath(entry.path));
         
         try {
-          await this.webcontainerFS.writeFile(entry.path, fileContents);
+          await this.webcontainerFS.writeFile(fixPath(entry.path), fileContents);
         } catch (e) {
           console.error(e);
         }

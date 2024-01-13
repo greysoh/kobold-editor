@@ -61,9 +61,13 @@ async function main() {
   }
 
   const project: string = params.get("project") as string; // Already checked it
-  console.log(project);
 
-  const webcontainerInstance = await WebContainer.boot();
+  if (!(await fs.exists("/projects/" + project, "folder"))) window.location.replace("/");
+
+  const webcontainerInstance = await WebContainer.boot({
+    workdirName: "projects"
+  });
+  
   term.write("Synchronizing file system... ");
   
   const autoFS: AutobahnFS = new AutobahnFS(fs, webcontainerInstance.fs);
