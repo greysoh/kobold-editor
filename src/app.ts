@@ -14,11 +14,17 @@ console.log("INFO: Initializing core...");
 const queryString: string = window.location.search;
 const params: URLSearchParams = new URLSearchParams(queryString);
 
+const sidebar: HTMLElement | null = document.getElementById("sidebar");
+
 const editorContainer: HTMLElement | null = document.getElementById("editor");
 const termContainer: HTMLElement | null = document.getElementById("terminal");
 
+if (!sidebar) throw new Error("Sidebar not found!");
+
 if (!editorContainer) throw new Error("Editor container not found!");
 if (!termContainer) throw new Error("Term container not found!");
+
+sidebar.className = css.sidebar;
 
 editorContainer.className = css.editor;
 termContainer.className = css.terminal;
