@@ -9,7 +9,6 @@ type FileSystemDataBlock = {
 
 type FileSystemNode = {
   type: "file" | "folder",
-  data?: Uint8Array,
   path: string,
 }
 
@@ -114,6 +113,10 @@ export class FileSystem {
     await this.syncToDisk();
   }
 
+  async mkdir(dirName: string): Promise<void> {
+    await this.syncToDisk();
+  }
+
   async rm(fileName: string): Promise<void> {
     // FIXME: We only use entry for checking. Maybe change into a better way?
     const entry: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == fileName);
@@ -138,20 +141,16 @@ export class FileSystem {
       }
     }
   }
-
-  async mkdir(dirName: string): Promise<void> {
-
-  }
-
-  // @ts-ignore
-  async ls(dirName: string): Promise<string[]> {
-
+  
+  async ls(dirName: string, includeFiles?: boolean): Promise<FileSystemNode[]> {
+    const allOtherEntries: FileSystemNode[] = this.localWorkingCopy.nodes.filter((i: FileSystemNode) => i.path.startsWith(dirName) && (includeFiles ? true : i.type == "folder"));
+    return allOtherEntries;
   }
 
   /**
    * This syncs the current data to disk
    */
   async syncToDisk(): Promise<void> {
-
+    await localForage.setItem(this.fileSystemName, this.localWorkingCopy);
   }
 }
