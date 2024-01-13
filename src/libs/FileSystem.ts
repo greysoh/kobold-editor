@@ -115,7 +115,7 @@ export class FileSystem {
       const entryAsFolder: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == fileName && i.type == "folder");
       if (entryAsFolder) throw new Error("File as folder already exists!");
 
-      const folderName: string = fileName.substring(0, fileName.lastIndexOf("/"));
+      const folderName: string = fileName.substring(0, fileName.lastIndexOf("/") + 1);
       const parentFolder: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == folderName && i.type == "folder");
 
       if (!parentFolder) throw new Error("Parent folder missing!");
@@ -144,6 +144,18 @@ export class FileSystem {
   }
 
   async mkdir(dirName: string): Promise<void> {
+    const entry: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == dirName && i.type == "folder");
+    if (entry) return;
+
+    const folderName: string = dirName.substring(0, dirName.lastIndexOf("/") + 1);
+    const parentFolder: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == folderName && i.type == "folder");
+
+    if (!parentFolder) throw new Error("Parent folder does not exist!");
+    this.localWorkingCopy.nodes.push({
+      type: "folder",
+      path: dirName
+    });
+
     await this.syncToDisk();
   }
 
