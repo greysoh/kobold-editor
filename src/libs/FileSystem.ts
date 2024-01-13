@@ -25,6 +25,8 @@ type FileSystemStruct = {
   telemetry?: FileSystemTelemetry
 }
 
+const fsLocks: string[] = [];
+
 export class FileSystem {
   private fileSystemName: string;
   private localWorkingCopy: FileSystemStruct;
@@ -33,6 +35,12 @@ export class FileSystem {
   public hasInitialized: boolean;
 
   constructor(fileSystemName: string) {
+    if (fsLocks.find((i: string) => fileSystemName == i)) {
+      throw new Error("Filesystem already mounted");
+    }
+
+    fsLocks.push(fileSystemName);
+
     this.localFileSystemEntries = [];
 
     this.fileSystemName = fileSystemName;
@@ -101,12 +109,36 @@ export class FileSystem {
     }
   }
 
-  // @ts-ignore
   async write(fileName: string, contents: Uint8Array): Promise<void> {
-
+    const entry: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == fileName);
+    await this.syncToDisk();
   }
 
-  // @ts-ignore
+  async rm(fileName: string): Promise<void> {
+    // FIXME: We only use entry for checking. Maybe change into a better way?
+    const entry: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == fileName);
+    if (!entry) throw new Error("Entry not found");
+
+    const allOtherEntries: FileSystemNode[] = this.localWorkingCopy.nodes.filter((i: FileSystemNode) => i.path.startsWith(fileName));
+
+    for (const entry of allOtherEntries) {
+      const entryIndex: number = this.localWorkingCopy.nodes.indexOf(entry);
+      this.localWorkingCopy.nodes.splice(entryIndex, 1);
+
+      if (entry.type == "file") {
+        // There's a lot more clean up work involved for files
+        const attemptedCacheHit: FileSystemDataBlock | undefined = this.localFileSystemEntries.find((i) => i.path == fileName);
+
+        if (attemptedCacheHit) {
+          const cacheIndex: number = this.localFileSystemEntries.indexOf(attemptedCacheHit);
+          this.localFileSystemEntries.splice(cacheIndex, 1);
+        }
+
+        await localForage.removeItem(this.fileSystemName + "_" + fileName);
+      }
+    }
+  }
+
   async mkdir(dirName: string): Promise<void> {
 
   }
@@ -117,7 +149,7 @@ export class FileSystem {
   }
 
   /**
-   * This syncs the 
+   * This syncs the current data to disk
    */
   async syncToDisk(): Promise<void> {
 
