@@ -63,7 +63,7 @@ export class FileSystem {
   }
   
   async init(ignoreVersionErrors?: boolean) {
-    if (!this.hasInitialized) throw new Error("Not initialized!");
+    if (this.hasInitialized) throw new Error("Already initialized!");
 
     try {
       const localEntry: FileSystemStruct = await localForage.getItem(this.fileSystemName) as FileSystemStruct;
