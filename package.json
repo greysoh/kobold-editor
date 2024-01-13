@@ -13,7 +13,10 @@
   "author": "",
   "license": "BSD-3-Clause",
   "devDependencies": {
+    "css-loader": "^6.9.0",
+    "mini-css-extract-plugin": "^2.7.7",
     "html-webpack-plugin": "^5.6.0",
+    "style-loader": "^3.3.4",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
     "webpack": "^5.89.0",
@@ -23,6 +26,7 @@
     "@webcontainer/api": "^1.1.8",
     "ace-builds": "^1.32.3",
     "localforage": "^1.10.0",
-    "xterm": "^5.3.0"
+    "xterm": "^5.3.0",
+    "xterm-addon-fit": "^0.8.0"
   }
 }
