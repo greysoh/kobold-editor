@@ -1,6 +1,7 @@
 import { FileSystem } from "./libs/FileSystem";
 
 import { WebContainer } from "@webcontainer/api";
+import { FitAddon } from "xterm-addon-fit";
 import { Terminal } from "xterm";
 import { edit } from "ace-builds";
 
@@ -22,7 +23,10 @@ const editor = edit("editor", {
 });
 
 const term = new Terminal();
+const fitAddon = new FitAddon();
+term.loadAddon(fitAddon);
 term.open(document.getElementById("terminal") as HTMLElement); // TODO: Nuh uh
+fitAddon.fit();
 
 editor.setAutoScrollEditorIntoView(true);
 const fs = new FileSystem("koboldfs");
@@ -30,6 +34,23 @@ const fs = new FileSystem("koboldfs");
 async function main() {
   await fs.init();
   await fs.mkdir("/projects");
+
+  const webcontainerInstance = await WebContainer.boot();
+  const shellProcess = await webcontainerInstance.spawn("jsh");
+
+  const input = shellProcess.input.getWriter();
+  
+  shellProcess.output.pipeTo(
+    new WritableStream({
+      write(data) {
+        term.write(data);
+      },
+    })
+  );
+
+  term.onData((data) => {
+    input.write(data);
+  });
 }
 
 main();
