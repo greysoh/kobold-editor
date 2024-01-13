@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "dev": "webpack --watch",
+    "dev": "webpack serve",
     "serve": "cd dist && python3 -m http.server 19001"
   },
   "keywords": [],
@@ -14,13 +14,14 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "css-loader": "^6.9.0",
-    "mini-css-extract-plugin": "^2.7.7",
     "html-webpack-plugin": "^5.6.0",
+    "mini-css-extract-plugin": "^2.7.7",
     "style-loader": "^3.3.4",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
     "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
     "@webcontainer/api": "^1.1.8",
