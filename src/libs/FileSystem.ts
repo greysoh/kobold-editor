@@ -79,6 +79,11 @@ export class FileSystem {
     this.hasInitialized = true;
   }
 
+  async exists(fileName: string, typeToSearchFor: "file" | "folder" = "file"): Promise<boolean> {
+    const entry: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == fileName && i.type == typeToSearchFor);
+    return Boolean(entry);
+  }
+
   async read(fileName: string): Promise<Uint8Array> {
     const entry: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == fileName && i.type == "file");
     if (!entry) throw new Error("Entry not found");

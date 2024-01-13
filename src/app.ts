@@ -7,8 +7,12 @@ import { Terminal } from "xterm";
 import { edit } from "ace-builds";
 
 import css from "./index.module.css";
+import 'ace-builds/src-noconflict/theme-dracula';
 
 console.log("INFO: Initializing core...");
+
+const queryString: string = window.location.search;
+const params: URLSearchParams = new URLSearchParams(queryString);
 
 const editorContainer: HTMLElement | null = document.getElementById("editor");
 const termContainer: HTMLElement | null = document.getElementById("terminal");
@@ -20,7 +24,7 @@ editorContainer.className = css.editor;
 termContainer.className = css.terminal;
 
 const editor = edit("editor", {
-  value: "const test123 = 'Hello, world!';"
+  theme: "ace/theme/dracula"
 });
 
 const term = new Terminal();
@@ -35,6 +39,29 @@ const fs = new FileSystem("koboldfs");
 async function main() {
   await fs.init();
   await fs.mkdir("/projects");
+
+  if (!params.get("project")) {
+    // TODO: maybe proper UI?
+    let projectName: string | null = prompt("Please give a project name:");
+
+    while (!projectName || !(await fs.exists("/projects/" + projectName, "folder"))) {
+      if (confirm("Project not found! Would you like to create it?")) {
+        await fs.mkdir("/projects/" + projectName);
+        break;
+      } else {
+        const localProjectName: string | null = prompt("Please give a project name:");
+        if (!localProjectName) continue;
+        
+        projectName = localProjectName;
+      }
+    }
+
+    window.location.href += "?project=" + projectName; // TODO: can be buggy?
+    return;
+  }
+
+  const project: string = params.get("project") as string; // Already checked it
+  console.log(project);
 
   const webcontainerInstance = await WebContainer.boot();
   term.write("Synchronizing file system... ");
