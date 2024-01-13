@@ -57,7 +57,7 @@ export class FileSystem {
       
       telemetry: {
         vendor: "kobold-dev",
-        fsRelease: 1_12_24
+        fsRelease: 1_01_12_2024
       }
     };
   }
@@ -67,6 +67,7 @@ export class FileSystem {
 
     try {
       const localEntry: FileSystemStruct = await localForage.getItem(this.fileSystemName) as FileSystemStruct;
+
       if (localEntry.version > this.localWorkingCopy.version && !ignoreVersionErrors) throw new Error("File system is older than currently supported! Expect things to break!");
       if (localEntry.version < this.localWorkingCopy.version && !ignoreVersionErrors) throw new Error("File system is newer than currently supported! Expect things to break!");
 
@@ -143,11 +144,13 @@ export class FileSystem {
     }
   }
 
-  async mkdir(dirName: string): Promise<void> {
+  async mkdir(dirNamePreprocessed: string): Promise<void> {
+    const dirName = dirNamePreprocessed.endsWith("/") ? dirNamePreprocessed : dirNamePreprocessed + "/";
+    
     const entry: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == dirName && i.type == "folder");
     if (entry) return;
 
-    const folderName: string = dirName.substring(0, dirName.lastIndexOf("/") + 1);
+    const folderName: string = dirName.substring(0, dirName.lastIndexOf("/", dirName.indexOf("/") + 1) + 1);
     const parentFolder: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == folderName && i.type == "folder");
 
     if (!parentFolder) throw new Error("Parent folder does not exist!");
