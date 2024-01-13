@@ -73,9 +73,11 @@ async function main() {
   const autoFS: AutobahnFS = new AutobahnFS(fs, webcontainerInstance.fs);
   await autoFS.sync();
 
+  await webcontainerInstance.fs.writeFile(".jshrc.sh", `cd "/home/projects/${project}/"\njsh`);
+
   term.write("[done]\r\n");
 
-  const shellProcess = await webcontainerInstance.spawn("jsh");
+  const shellProcess = await webcontainerInstance.spawn("jsh", ["/home/projects/.jshrc.sh"]);
   const input = shellProcess.input.getWriter();
 
   shellProcess.output.pipeTo(
