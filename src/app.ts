@@ -1,4 +1,5 @@
 import { FileSystem } from "./libs/FileSystem";
+import { AutobahnFS } from "./libs/AutobahnFS";
 
 import { WebContainer } from "@webcontainer/api";
 import { FitAddon } from "xterm-addon-fit";
@@ -36,10 +37,16 @@ async function main() {
   await fs.mkdir("/projects");
 
   const webcontainerInstance = await WebContainer.boot();
-  const shellProcess = await webcontainerInstance.spawn("jsh");
-
-  const input = shellProcess.input.getWriter();
+  term.write("Synchronizing file system... ");
   
+  const autoFS: AutobahnFS = new AutobahnFS(fs, webcontainerInstance.fs);
+  await autoFS.sync();
+
+  term.write("[done]\r\n");
+
+  const shellProcess = await webcontainerInstance.spawn("jsh");
+  const input = shellProcess.input.getWriter();
+
   shellProcess.output.pipeTo(
     new WritableStream({
       write(data) {

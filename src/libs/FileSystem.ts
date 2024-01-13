@@ -1,23 +1,23 @@
 import localForage from "localforage";
 
 // TODO: change to interface? I should learn the difference sometime
-type FileSystemDataBlock = {
+export type FileSystemDataBlock = {
   type: "file",
   path: string,
   data: Uint8Array
 }
 
-type FileSystemNode = {
+export type FileSystemNode = {
   type: "file" | "folder",
   path: string,
 }
 
-type FileSystemTelemetry = {
+export type FileSystemTelemetry = {
   vendor: string,
   fsRelease: string | number;
 }
 
-type FileSystemStruct = {
+export type FileSystemStruct = {
   nodes: FileSystemNode[],
   version: number,
 
@@ -195,7 +195,7 @@ export class FileSystem {
   /**
    * This syncs the current data to disk
    */
-  async syncToDisk(): Promise<void> {
+  private async syncToDisk(): Promise<void> {
     await localForage.setItem(this.fileSystemName, this.localWorkingCopy);
   }
 }
