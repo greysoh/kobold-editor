@@ -80,8 +80,18 @@ export class FileSystem {
   }
 
   async exists(fileName: string, typeToSearchFor: "file" | "folder" = "file"): Promise<boolean> {
-    const entry: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == fileName && i.type == typeToSearchFor);
-    return Boolean(entry);
+    if (typeToSearchFor == "folder") {
+      const dirName = fileName.endsWith("/") ? fileName : fileName + "/";
+      const entry: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == dirName && i.type == typeToSearchFor);
+      
+      return Boolean(entry);
+    } else if (typeToSearchFor == "file") {
+      const entry: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == fileName && i.type == typeToSearchFor);
+      
+      return Boolean(entry);
+    }
+
+    return false;
   }
 
   async read(fileName: string): Promise<Uint8Array> {
