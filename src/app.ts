@@ -10,6 +10,11 @@ import { FitAddon } from "xterm-addon-fit";
 import { Terminal } from "xterm";
 import { edit } from "ace-builds";
 
+import '@fortawesome/fontawesome-free/js/fontawesome';
+import '@fortawesome/fontawesome-free/js/regular';
+import '@fortawesome/fontawesome-free/js/brands';
+import '@fortawesome/fontawesome-free/js/solid';
+
 import 'ace-builds/src-noconflict/theme-dracula';
 import css from "./index.module.css";
 

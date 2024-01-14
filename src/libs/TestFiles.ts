@@ -7,7 +7,7 @@ const textFiles = {
         \\/         \\/                  \\/          \\/      \\/                        
                                                               - Kobold Editor v0.01
 Welcome to Kobold! This is a simple text editor I wrote to be hackable, but also (somewhat) easily usable.
-Admittedly, I can't take a lot of credit for this project:
+Admittedly, I can't take a lot of the impressive side of the credit for this project:
   - WebContainers: Web-based containers API I'm using
   - Ace Editor: Embedded text editor
   - Xterm.JS: Web-based terminal emulator
@@ -22,7 +22,7 @@ This project (should be by the time you see this) is open source on https://gith
 -- Safety
 This is entirely safe as it doesn't run any actual code on your computer, and instead is a playground of sorts.
 
--- Halp!!!
+-- Halp!
 If you see this and you're stuck, you probably accidentally closed out of the project selection prompt. If you have
 any other issues, feel free to report them at https://github.com/greysoh/kobold-editor/issues (you'll need a Git account)
 

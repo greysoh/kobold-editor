@@ -5,3 +5,13 @@
   width: calc(300px - var(--border-size));
   background-color: rgb(30, 32, 44);
 }
+
+.project-container .titlebar-buttons {
+  position: absolute;
+  left: 250px;
+}
+
+.clickable {
+  user-select: none;
+  cursor: pointer;
+}

@@ -12,6 +12,8 @@ html {
   color: white;
 
   overflow-y: scroll;
+  overflow-x: hidden;
+  user-select: none;
   
   position: absolute;
   top: 0;
