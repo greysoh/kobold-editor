@@ -23,6 +23,9 @@ This project (should be by the time you see this) is open source on https://gith
 If you see this and you're stuck, you probably accidentally closed out of the project selection prompt. If you have
 any other issues, feel free to report them at https://github.com/greysoh/kobold-editor/issues (you'll need a Git account)
 
+-- Licenses
+You can view the open source projects & licenses used for this project at https://kobold.greysoh.dev/bundle.js.LICENSE.txt
+
 - @greysoh`
 }
 
