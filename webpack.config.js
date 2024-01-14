@@ -1,7 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-module.exports = {
+const options = {
   entry: "./src/app.ts",
   mode: "development",
   output: {
@@ -56,4 +56,7 @@ module.exports = {
       inject: true
     }),
   ],
-};
+}
+
+if (process.env.NODE_ENV == "production") options.mode = "production";
+module.exports = options;
