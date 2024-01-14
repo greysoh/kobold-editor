@@ -1,3 +1,5 @@
+import { renderTreeView } from "./libs/FileSystemTreeVIew";
+
 import { FileSystem } from "./libs/FileSystem";
 import { AutobahnFS } from "./libs/AutobahnFS";
 
@@ -23,6 +25,12 @@ if (!sidebar) throw new Error("Sidebar not found!");
 
 if (!editorContainer) throw new Error("Editor container not found!");
 if (!termContainer) throw new Error("Term container not found!");
+
+const projectNameElement: HTMLSpanElement = sidebar.getElementsByClassName("project-name")[0] as HTMLSpanElement;
+const sidebarElements: HTMLDivElement = sidebar.getElementsByClassName("true-elements")[0] as HTMLDivElement;
+
+if (!projectNameElement) throw new Error("Project name element not found!");
+if (!sidebarElements) throw new Error("Sidebar elements not found!");
 
 sidebar.className = css.sidebar;
 
@@ -67,14 +75,24 @@ async function main() {
   }
 
   const project: string = params.get("project") as string; // Already checked it
-
   if (!(await fs.exists("/projects/" + project, "folder"))) window.location.replace("/");
+
+  // Init editor
+  projectNameElement.innerText = project;
+
+  const treeView = await renderTreeView("/projects/" + project, fs, (file: string) => {
+    console.log("File opened:", file);
+  });
+
+  sidebarElements.append(...treeView);
+
+  term.write("Welcome to Kobold Editor v0.01\r\n - Booting container...");
 
   const webcontainerInstance = await WebContainer.boot({
     workdirName: "projects"
   });
   
-  term.write("Synchronizing file system... ");
+  term.write(" [done]\r\n - Creating file system bridge... ");
   
   const autoFS: AutobahnFS = new AutobahnFS(fs, webcontainerInstance.fs);
   await autoFS.sync();
