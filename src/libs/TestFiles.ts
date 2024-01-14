@@ -19,9 +19,6 @@ amazing VSCode port (way more practical to use that, imo)
 Currently, this project is around 400-500 lines of code that I have written(!)
 This project (should be by the time you see this) is open source on https://github.com/greysoh/kobold-editor
 
--- Safety
-This is entirely safe as it doesn't run any actual code on your computer, and instead is a playground of sorts.
-
 -- Halp!
 If you see this and you're stuck, you probably accidentally closed out of the project selection prompt. If you have
 any other issues, feel free to report them at https://github.com/greysoh/kobold-editor/issues (you'll need a Git account)
