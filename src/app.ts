@@ -201,22 +201,28 @@ async function main() {
 
   // Configure the text editor
 
-  function saveTimer(): void {
+  async function saveTimer(): Promise<void> {
     if (currentSaveTimerState != 0) currentSaveTimerState -= 100;
-    if (currentSaveTimerState < 0) currentSaveTimerState = 0;
+
+    if (currentSaveTimerState == 0) {
+      if (!activeFile) {
+        currentSaveTimerState = 2000;
+        setTimeout(saveTimer, 100);
+        return;
+      }
+
+      const text: string = editor.getValue();
+      await autoFS.write(activeFile, encoder.encode(text));
+      
+      currentSaveTimerState = -100;
+    }
     
     setTimeout(saveTimer, 100);
   }
   
   editor.on("change", async() => {
+    console.log(currentSaveTimerState, activeFile);
     currentSaveTimerState = 2000;
-
-    if (activeFile && currentSaveTimerState == 0) {
-      console.log("Saving changes...");
-
-      const text: string = editor.getValue();
-      await autoFS.write(activeFile, encoder.encode(text));
-    }
   });
 
   saveTimer();
