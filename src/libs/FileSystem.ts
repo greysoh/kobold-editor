@@ -94,9 +94,9 @@ export class FileSystem {
     return false;
   }
 
-  async read(fileName: string): Promise<Uint8Array> {
+  async read(fileName: string): Promise<Uint8Array> {    
     const entry: FileSystemNode | undefined = this.localWorkingCopy.nodes.find((i: FileSystemNode) => i.path == fileName && i.type == "file");
-    if (!entry) throw new Error("Entry not found");
+    if (!entry) throw new Error("File not found");
 
     if (entry.type == "folder") throw new Error("Not a file!");
 

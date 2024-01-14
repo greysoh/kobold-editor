@@ -1,6 +1,8 @@
 import type { FileSystem, FileSystemNode } from "./FileSystem";
 import type { FileSystemAPI } from "@webcontainer/api";
 
+const fixPath = (path: string): string => path.replace("/projects", "/");
+
 export class AutobahnFS {
   trueFS: FileSystem;
   webcontainerFS: FileSystemAPI;
@@ -16,17 +18,17 @@ export class AutobahnFS {
 
   async write(fileName: string, contents: Uint8Array): Promise<void> {
     await this.trueFS.write(fileName, contents);
-    await this.webcontainerFS.writeFile(fileName, contents);
+    await this.webcontainerFS.writeFile(fixPath(fileName), contents);
   }
 
   async mkdir(dirName: string): Promise<void> {
     await this.trueFS.mkdir(dirName);
-    await this.webcontainerFS.mkdir(dirName);
+    await this.webcontainerFS.mkdir(fixPath(dirName));
   }
 
   async rm(fileName: string): Promise<void> {
     await this.trueFS.rm(fileName);
-    await this.webcontainerFS.rm(fileName);
+    await this.webcontainerFS.rm(fixPath(fileName));
   }
 
   async ls(dirName: string, includeFiles?: boolean): Promise<FileSystemNode[]> {
@@ -34,8 +36,6 @@ export class AutobahnFS {
   }
 
   async sync(directory: string = "/"): Promise<void> {
-    const fixPath = (path: string): string => path.replace("/projects", "/");
-
     for (const entry of await this.trueFS.ls(directory, true)) {
       if (directory == entry.path) continue;
 
@@ -48,7 +48,7 @@ export class AutobahnFS {
 
         await this.sync(fixPath(entry.path));
       } else if (entry.type == "file") {
-        const fileContents: Uint8Array = await this.trueFS.read(fixPath(entry.path));
+        const fileContents: Uint8Array = await this.trueFS.read(entry.path);
         
         try {
           await this.webcontainerFS.writeFile(fixPath(entry.path), fileContents);
