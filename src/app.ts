@@ -3,6 +3,8 @@ import { renderTreeView } from "./libs/FileSystemTreeVIew";
 import { FileSystem } from "./libs/FileSystem";
 import { AutobahnFS } from "./libs/AutobahnFS";
 
+import { textFiles } from "./libs/TestFiles";
+
 import { WebContainer } from "@webcontainer/api";
 import { FitAddon } from "xterm-addon-fit";
 import { Terminal } from "xterm";
@@ -56,7 +58,11 @@ async function main() {
 
   if (!params.get("project")) {
     // TODO: maybe proper UI?
+    editor.setValue(textFiles["welcome.txt"]);
+    await new Promise((i) => setTimeout(i, 100));
+
     let projectName: string | null = prompt("Please give a project name:");
+    if (projectName == null) return;
 
     while (!projectName || !(await fs.exists("/projects/" + projectName, "folder"))) {
       if (confirm("Project not found! Would you like to create it?")) {
@@ -64,6 +70,7 @@ async function main() {
         break;
       } else {
         const localProjectName: string | null = prompt("Please give a project name:");
+        if (localProjectName == null) return;
         if (!localProjectName) continue;
         
         projectName = localProjectName;
