@@ -1,0 +1,7 @@
+.project-container {
+  padding: 3px;
+
+  position: static;
+  width: calc(300px - var(--border-size));
+  background-color: rgb(30, 32, 44);
+}

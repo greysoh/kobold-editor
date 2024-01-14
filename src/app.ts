@@ -1,12 +1,14 @@
+import { renderTreeView } from "./libs/FileSystemTreeVIew";
+
+import { FileSystem } from "./libs/FileSystem";
+import { AutobahnFS } from "./libs/AutobahnFS";
+
+import { textFiles } from "./libs/TestFiles";
+
 import { WebContainer } from "@webcontainer/api";
 import { FitAddon } from "xterm-addon-fit";
 import { Terminal } from "xterm";
 import { edit } from "ace-builds";
-
-import 'ace-builds/src-noconflict/theme-dracula';
-
-import { FileSystem } from "./libs/FileSystem";
-import { AutobahnFS } from "./libs/AutobahnFS";
 
 import css from "./index.module.css";
 
@@ -27,6 +29,12 @@ if (!sidebar) throw new Error("Sidebar not found!");
 
 if (!editorContainer) throw new Error("Editor container not found!");
 if (!termContainer) throw new Error("Term container not found!");
+
+const projectNameElement: HTMLSpanElement = sidebar.getElementsByClassName("project-name")[0] as HTMLSpanElement;
+const sidebarElements: HTMLDivElement = sidebar.getElementsByClassName("true-elements")[0] as HTMLDivElement;
+
+if (!projectNameElement) throw new Error("Project name element not found!");
+if (!sidebarElements) throw new Error("Sidebar elements not found!");
 
 sidebar.className = css.sidebar;
 
@@ -57,7 +65,11 @@ async function main() {
 
   if (!params.get("project")) {
     // TODO: maybe proper UI?
+    editor.setValue(textFiles["welcome.txt"]);
+    await new Promise((i) => setTimeout(i, 100));
+
     let projectName: string | null = prompt("Please give a project name:");
+    if (projectName == null) return;
 
     while (!projectName || !(await fs.exists("/projects/" + projectName, "folder"))) {
       if (confirm("Project not found! Would you like to create it?")) {
@@ -65,6 +77,7 @@ async function main() {
         break;
       } else {
         const localProjectName: string | null = prompt("Please give a project name:");
+        if (localProjectName == null) return;
         if (!localProjectName) continue;
         
         projectName = localProjectName;
@@ -78,13 +91,22 @@ async function main() {
   const project: string = params.get("project") as string; // Already checked it
   if (!(await fs.exists("/projects/" + project, "folder"))) window.location.replace("/");
 
-  // Boot our container, then synchronize the fs
+  // Init editor
+  projectNameElement.innerText = project;
+
+  const treeView = await renderTreeView("/projects/" + project, fs, (file: string) => {
+    console.log("File opened:", file);
+  });
+
+  sidebarElements.append(...treeView);
+
+  term.write("Welcome to Kobold Editor v0.01\r\n - Booting container...");
 
   const webcontainerInstance = await WebContainer.boot({
     workdirName: "projects"
   });
   
-  term.write("Synchronizing file system...");
+  term.write(" [done]\r\n - Creating file system bridge... ");
   
   const autoFS: AutobahnFS = new AutobahnFS(fs, webcontainerInstance.fs);
   await autoFS.sync();
@@ -124,7 +146,7 @@ async function main() {
 
     if (activeFile && currentSaveTimerState == 0) {
       console.log("Saving changes...");
-      
+
       const text: string = editor.getValue();
       await autoFS.write(activeFile, encoder.encode(text));
     }
