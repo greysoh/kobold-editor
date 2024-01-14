@@ -6,25 +6,26 @@ export async function renderTreeView(directory: string, fs: FileSystem, fileOpen
 
   // Folders first!
   for (const folderEntry of filesAndFolders.filter((i) => i.type == "folder")) {
-    // I'm sorry.
-    // TODO: This is real nasty!
+    if (folderEntry.path == directory || folderEntry.path == directory + "/") continue;
+    
+    const folderCheckString: string = folderEntry.path.substring(0, folderEntry.path.lastIndexOf("/", folderEntry.path.length - 2));
+    if (folderCheckString != directory) continue;
+
+    const trueFolderName: string = folderEntry.path.substring(folderEntry.path.lastIndexOf("/", folderEntry.path.length - 2) + 1, folderEntry.path.length);
+    if (trueFolderName == "") continue;
 
     const realTextElement: HTMLSpanElement = document.createElement("span");
-    const spaceElement: HTMLSpanElement = document.createElement("span");
     const innerElements: HTMLDivElement = document.createElement("div");
     const rootElement: HTMLSpanElement = document.createElement("span");
     const iconElement: HTMLElement = document.createElement("i");
-    
-    const trueFolderName: string = folderEntry.path.substring(folderEntry.path.lastIndexOf("/") + 1, folderEntry.path.length);
-    if (trueFolderName == "") continue;
 
-    spaceElement.innerText = offset;
     iconElement.className = "clickable fa-solid fa-folder";
     
-    realTextElement.innerText = trueFolderName;
-    rootElement.className = "clickable";
+    realTextElement.innerHTML = offset;
+    realTextElement.innerText += trueFolderName;
+    
+    rootElement.className = "clickable fontawesome-i2svg-active";
 
-    rootElement.appendChild(spaceElement);
     rootElement.appendChild(iconElement);
     rootElement.appendChild(realTextElement);
 
@@ -40,28 +41,33 @@ export async function renderTreeView(directory: string, fs: FileSystem, fileOpen
         innerElements.textContent = "";
         innerElements.style.display = "none";
       } else {
+        const elements = await renderTreeView(folderEntry.path, fs, fileOpenCallback, offset + "&nbsp;&nbsp;&nbsp;&nbsp;");
+        if (elements.length == 0) return;
+
         iconElement.className = "clickable fa-solid fa-folder";
         innerElements.style.display = "initial";
-        const elements = await renderTreeView(directory, fs, fileOpenCallback, offset + "&nbsp;");
 
-        innerElements.append(...elements);
+        innerElements.append(document.createElement("br"), ...elements.slice(0, elements.length-1));
       }
     });
 
-    elements.push(rootElement, innerElements);
+    elements.push(rootElement, innerElements, document.createElement("br"));
   }
 
   for (const fileEntry of filesAndFolders.filter((i) => i.type == "file")) {
+    if (fileEntry.path.substring(0, fileEntry.path.lastIndexOf("/")) != directory) continue;
+
     const rootElement: HTMLSpanElement = document.createElement("span");
     rootElement.className = "clickable";
 
-    rootElement.innerText = offset + fileEntry.path.substring(fileEntry.path.lastIndexOf("/") + 1, fileEntry.path.length);
+    rootElement.innerHTML = offset;
+    rootElement.innerText += fileEntry.path.substring(fileEntry.path.lastIndexOf("/") + 1, fileEntry.path.length);
     
     rootElement.addEventListener("click", () => {
       fileOpenCallback(fileEntry.path);
     });
 
-    elements.push(rootElement);
+    elements.push(rootElement, document.createElement("br"));
   }
 
   return elements;

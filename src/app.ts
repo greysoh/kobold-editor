@@ -71,6 +71,24 @@ async function main() {
   let activeFile: string = "";
   let currentSaveTimerState: number = 0;
 
+  async function fileCallback(file: string) {
+    console.log("File opened:", file);
+    activeFile = "";
+
+    const mimeType: string | false = mime.lookup(file);
+    if (mimeType) {
+      // Epic hack
+      const mode: string = `ace/mode/${mimeType.substring(mimeType.lastIndexOf("/") + 1, mimeType.length)}`;
+      editor.setOption("mode", mode);
+    } else {
+      editor.setOption("mode", "");
+    }
+    
+    const decodedFile: string = decoder.decode(await fs.read(file));
+    editor.setValue(decodedFile);
+    activeFile = file;
+  }
+
   await fs.init();
   await fs.mkdir("/projects");
 
@@ -105,24 +123,7 @@ async function main() {
   // Init base editor
   projectNameElement.innerText = project;
 
-  const treeView = await renderTreeView("/projects/" + project, fs, async(file: string) => {
-    console.log("File opened:", file);
-    activeFile = "";
-
-    const mimeType: string | false = mime.lookup(file);
-    if (mimeType) {
-      // Epic hack
-      const mode: string = `ace/mode/${mimeType.substring(mimeType.lastIndexOf("/") + 1, mimeType.length)}`;
-      editor.setOption("mode", mode);
-    } else {
-      editor.setOption("mode", "");
-    }
-    
-    const decodedFile: string = decoder.decode(await fs.read(file));
-    editor.setValue(decodedFile);
-    activeFile = file;
-  });
-
+  const treeView = await renderTreeView("/projects/" + project, fs, fileCallback);
   sidebarElements.append(...treeView);
 
   // Init terminal/container
@@ -143,20 +144,38 @@ async function main() {
     const folderName = prompt("Where would you like the folder to be created?");
     if (!folderName) return;
 
-    await autoFS.mkdir(`/projects/${project}/${folderName}`).catch((e: Error) => {
+    const mkdirResult: void | boolean = await autoFS.mkdir(`/projects/${project}/${folderName}`).catch((e: Error) => {
       console.error(e);
       alert(e.message);
+
+      return true;
     });
+    
+    if (mkdirResult) return;
+
+    sidebarElements.textContent = "";
+      
+    const treeView = await renderTreeView("/projects/" + project, fs, fileCallback);
+    sidebarElements.append(...treeView);
   });
 
   fileCreateElement.addEventListener("click", async() => {
     const fileName = prompt("Where would you like the file to be created?");
     if (!fileName) return;
 
-    await autoFS.write(`/projects/${project}/${fileName}`, new Uint8Array(0)).catch((e: Error) => {
+    const createResult: void | boolean = await autoFS.write(`/projects/${project}/${fileName}`, new Uint8Array(0)).catch((e: Error) => {
       console.error(e);
       alert(e.message);
+
+      return true;
     });
+
+    if (createResult) return;
+
+    sidebarElements.textContent = "";
+      
+    const treeView = await renderTreeView("/projects/" + project, fs, fileCallback);
+    sidebarElements.append(...treeView);
   });
 
   await webcontainerInstance.fs.writeFile(".jshrc.sh", `cd "/home/projects/${project}/"\njsh`);
