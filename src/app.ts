@@ -18,16 +18,8 @@ import '@fortawesome/fontawesome-free/js/regular';
 import '@fortawesome/fontawesome-free/js/brands';
 import '@fortawesome/fontawesome-free/js/solid';
 
-import 'ace-builds/src-noconflict/theme-dracula';
-
-// Currently supported languages
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/mode-typescript';
-import 'ace-builds/src-noconflict/mode-python';
-import 'ace-builds/src-noconflict/mode-json';
-import 'ace-builds/src-noconflict/mode-html';
-import 'ace-builds/src-noconflict/mode-scss';
-import 'ace-builds/src-noconflict/mode-css';
+// This was the only way I could get stuff to load right
+import "ace-builds/webpack-resolver";
 
 import css from "./index.module.css";
 
@@ -120,12 +112,13 @@ async function main() {
     const mimeType: string | false = mime.lookup(file);
     if (mimeType) {
       // Epic hack
-      editor.setOption("mode", `ace/editor/${mimeType.substring(mimeType.lastIndexOf("/") + 1, mimeType.length)}`);
+      const mode: string = `ace/mode/${mimeType.substring(mimeType.lastIndexOf("/") + 1, mimeType.length)}`;
+      editor.setOption("mode", mode);
     } else {
       editor.setOption("mode", "");
     }
     
-    const decodedFile: string = decoder.decode(await autoFS.read(file));
+    const decodedFile: string = decoder.decode(await fs.read(file));
     editor.setValue(decodedFile);
     activeFile = file;
   });
