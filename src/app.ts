@@ -10,6 +10,7 @@ import { FitAddon } from "xterm-addon-fit";
 import { Terminal } from "xterm";
 import { edit } from "ace-builds";
 
+import 'ace-builds/src-noconflict/theme-dracula';
 import css from "./index.module.css";
 
 console.log("INFO: Initializing core...");
