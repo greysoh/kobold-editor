@@ -1,7 +1,9 @@
 import type { FileSystem, FileSystemNode } from "./FileSystem";
 
-export async function renderTreeView(directory: string, fs: FileSystem, fileOpenCallback: Function, offset: string = ""): Promise<HTMLElement[]> {
+export async function renderTreeView(originalDirectory: string, fs: FileSystem, fileOpenCallback: Function, offset: string = "&nbsp;"): Promise<HTMLElement[]> {
   const elements: HTMLElement[] = [];
+  const directory: string = originalDirectory.endsWith("/") ? originalDirectory.substring(0, originalDirectory.length - 1) : originalDirectory;
+
   const filesAndFolders: FileSystemNode[] = await fs.ls(directory, true);
 
   // Folders first!
@@ -19,12 +21,12 @@ export async function renderTreeView(directory: string, fs: FileSystem, fileOpen
     const rootElement: HTMLSpanElement = document.createElement("span");
     const iconElement: HTMLElement = document.createElement("i");
 
-    iconElement.className = "clickable fa-solid fa-folder";
+    iconElement.className = "fa-solid fa-folder";
     
     realTextElement.innerHTML = offset;
     realTextElement.innerText += trueFolderName;
     
-    rootElement.className = "clickable fontawesome-i2svg-active";
+    rootElement.className = "clickable kobold-fs-item fontawesome-i2svg-active";
 
     rootElement.appendChild(iconElement);
     rootElement.appendChild(realTextElement);
@@ -58,7 +60,7 @@ export async function renderTreeView(directory: string, fs: FileSystem, fileOpen
     if (fileEntry.path.substring(0, fileEntry.path.lastIndexOf("/")) != directory) continue;
 
     const rootElement: HTMLSpanElement = document.createElement("span");
-    rootElement.className = "clickable";
+    rootElement.className = "clickable kobold-fs-item";
 
     rootElement.innerHTML = offset;
     rootElement.innerText += fileEntry.path.substring(fileEntry.path.lastIndexOf("/") + 1, fileEntry.path.length);
