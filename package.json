@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
+    "prod-build": "NODE_ENV=production webpack && cp _headers dist/",
     "dev": "webpack serve",
     "serve": "cd dist && python3 -m http.server 19001"
   },
