@@ -1,0 +1,2 @@
+# Kobold Editor [![Netlify Status](https://api.netlify.com/api/v1/badges/1cc8ba97-3e5f-417b-83e2-df4cd1ae83da/deploy-status)](https://app.netlify.com/sites/kobold-editor/deploys)
+[Kobold Editor](https://kobold.greysoh.dev) is a lightweight code editor for the web, using WebContainers.
