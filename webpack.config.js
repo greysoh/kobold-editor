@@ -1,5 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { LicenseFilePlugin } = require("generate-license-file-webpack-plugin");
 
 const options = {
   entry: "./src/app.ts",
@@ -52,6 +53,9 @@ const options = {
       filename: "index.html",
       inject: true
     }),
+    new LicenseFilePlugin({
+      outputFileName: "LICENSE.txt"
+    })
   ],
 }
 

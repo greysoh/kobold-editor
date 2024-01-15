@@ -24,7 +24,7 @@ If you see this and you're stuck, you probably accidentally closed out of the pr
 any other issues, feel free to report them at https://github.com/greysoh/kobold-editor/issues (you'll need a Git account)
 
 -- Licenses
-You can view the open source projects & licenses used for this project at https://kobold.greysoh.dev/bundle.js.LICENSE.txt
+You can view the open source projects & licenses used for this project at https://kobold.greysoh.dev/LICENSE.txt
 
 - @greysoh`
 }

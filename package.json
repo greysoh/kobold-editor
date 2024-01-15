@@ -14,9 +14,9 @@
   "author": "",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^6.5.1",
     "css-loader": "^6.9.0",
     "file-loader": "^6.2.0",
+    "generate-license-file-webpack-plugin": "^3.0.1",
     "html-webpack-plugin": "^5.6.0",
     "mini-css-extract-plugin": "^2.7.7",
     "style-loader": "^3.3.4",
@@ -27,6 +27,7 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.5.1",
     "@webcontainer/api": "^1.1.8",
     "ace-builds": "^1.32.3",
     "localforage": "^1.10.0",
