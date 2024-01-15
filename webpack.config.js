@@ -12,9 +12,6 @@ const options = {
     extensions: [".ts", ".js"],
     alias: {
       node_modules: path.resolve(__dirname, "node_modules")
-    },
-    fallback: {
-      "path": require.resolve("path-browserify")
     }
   },
   devServer: {

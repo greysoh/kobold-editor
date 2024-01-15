@@ -5,12 +5,12 @@ import { AutobahnFS } from "./libs/AutobahnFS";
 
 import { textFiles } from "./libs/TestFiles";
 
+import { lookup } from "./libs/MimeTypes";
+
 import { WebContainer } from "@webcontainer/api";
 import { FitAddon } from "xterm-addon-fit";
 import { Terminal } from "xterm";
 import { edit } from "ace-builds";
-
-import mime from "mime-types";
 
 // Fonts & themes
 import '@fortawesome/fontawesome-free/js/fontawesome';
@@ -75,12 +75,13 @@ async function main() {
     console.log("File opened:", file);
     activeFile = "";
 
-    const mimeType: string | false = mime.lookup(file);
+    const mimeType: string | false = lookup(file);
     if (mimeType) {
       // Epic hack
-      const mode: string = `ace/mode/${mimeType.substring(mimeType.lastIndexOf("/") + 1, mimeType.length)}`;
+      const mode: string = `ace/mode/${mimeType}`;
       editor.setOption("mode", mode);
     } else {
+      console.warn("Unknown extension for: " + file);
       editor.setOption("mode", "");
     }
     
@@ -221,7 +222,6 @@ async function main() {
   }
   
   editor.on("change", async() => {
-    console.log(currentSaveTimerState, activeFile);
     currentSaveTimerState = 2000;
   });
 
