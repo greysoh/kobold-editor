@@ -44,8 +44,11 @@ if (!termContainer) throw new Error("Term container not found!");
 const projectNameElement: HTMLSpanElement = sidebar.getElementsByClassName("project-name")[0] as HTMLSpanElement;
 const sidebarElements: HTMLDivElement = sidebar.getElementsByClassName("true-elements")[0] as HTMLDivElement;
 
-const folderCreateElement: HTMLElement = document.getElementById("folder-create") as HTMLElement; // TODO: I'm lazy.
-const fileCreateElement: HTMLElement = document.getElementById("file-create") as HTMLElement; // TODO: I'm lazy.
+// TODO: I'm lazy.
+const folderCreateElement: HTMLElement = document.getElementById("folder-create") as HTMLElement; 
+const fileCreateElement: HTMLElement = document.getElementById("file-create") as HTMLElement;
+
+const titlebarElement: HTMLElement = document.getElementById("titlebar-text") as HTMLElement;
 
 sidebar.className = css.sidebar;
 
@@ -68,6 +71,8 @@ const fs = new FileSystem("koboldfs");
 
 async function main() {
   // We hit proper initialization!
+  titlebarElement.innerText = "Initializing...";
+
   let activeFile: string = "";
   let currentSaveTimerState: number = 0;
 
@@ -88,6 +93,8 @@ async function main() {
     const decodedFile: string = decoder.decode(await fs.read(file));
     editor.setValue(decodedFile);
     activeFile = file;
+
+    titlebarElement.innerText = "Current file: " + activeFile;
   }
 
   await fs.init();
@@ -134,7 +141,7 @@ async function main() {
     workdirName: "projects"
   });
   
-  term.write(" [done]\r\n - Creating file system bridge... ");
+  term.write("            [done]\r\n - Creating file system bridge... ");
   
   // FS/Delayed init tasks
   const autoFS: AutobahnFS = new AutobahnFS(fs, webcontainerInstance.fs);
@@ -226,6 +233,8 @@ async function main() {
   });
 
   saveTimer();
+
+  titlebarElement.innerText = "Initialized.";
 }
 
 main();

@@ -6,7 +6,7 @@
   background-color: rgb(30, 32, 44);
 }
 
-.project-container .titlebar-buttons {
+.project-container .sidebar-buttons {
   position: absolute;
   left: 250px;
 }
@@ -23,4 +23,18 @@
 
 .kobold-fs-item:hover {
   background-color: #44475a;
+}
+
+.titlebar {
+  background-color: rgb(30, 32, 44);
+  user-select: none;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: white;
+
+  padding: 3px;
+
+  position: absolute;
+  top: 0;
+  left: calc(300px - var(--border-size));
+  width: 100%;
 }

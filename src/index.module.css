@@ -28,13 +28,15 @@ html {
 }
 
 .editor {
+  --capped-size: 27px;
+
   position: absolute;
-  top: 0;
+  top: var(--capped-size);
   right: 0;
   bottom: 0;
   left: 300px;
   width: calc(100% - 300px);
-  height: 70%;
+  height: calc(70% - var(--capped-size));
 }
 
 .terminal {
