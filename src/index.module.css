@@ -5,6 +5,7 @@ html {
   --border-size: 5px;
 
   overflow: hidden;
+  background-color: #282a36;
 }
 
 .sidebar {
